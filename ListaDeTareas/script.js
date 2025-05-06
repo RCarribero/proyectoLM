@@ -23,49 +23,54 @@ function agregarNuevaTarea() {
 
 // Crear elemento <li> con botones
 function crearElementoTarea(textoTarea) {
-  const nuevaTarea = document.createElement("li");
-
-  const spanTexto = document.createElement("span");
-  spanTexto.textContent = textoTarea;
-
-  const btnEliminar = document.createElement("button");
-  btnEliminar.textContent = "Eliminar";
-  btnEliminar.addEventListener("click", () => {
-    listaTarea.removeChild(nuevaTarea);
-    guardarEnLocalStorage();
-  });
-
-  const btnEditar = document.createElement("button");
-  btnEditar.textContent = "Editar";
-  btnEditar.addEventListener("click", () => {
-    const inputEdicion = document.createElement("input");
-    inputEdicion.type = "text";
-    inputEdicion.value = spanTexto.textContent;
-
-    nuevaTarea.replaceChild(inputEdicion, spanTexto);
-    nuevaTarea.replaceChild(btnGuardar, btnEditar);
-    inputEdicion.focus();
-
-    inputEdicion.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") btnGuardar.click();
+    const nuevaTarea = document.createElement("li");
+  
+    const spanTexto = document.createElement("span");
+    spanTexto.textContent = textoTarea;
+  
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.classList.add("btn-eliminar");
+    btnEliminar.addEventListener("click", () => {
+      listaTarea.removeChild(nuevaTarea);
+      guardarEnLocalStorage();
     });
-  });
-
-  const btnGuardar = document.createElement("button");
-  btnGuardar.textContent = "Guardar";
-  btnGuardar.addEventListener("click", () => {
-    const nuevoTexto = nuevaTarea.querySelector("input").value.trim();
-    spanTexto.textContent = nuevoTexto;
-    nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
-    nuevaTarea.replaceChild(btnEditar, btnGuardar);
-    guardarEnLocalStorage();
-  });
-
-  nuevaTarea.appendChild(spanTexto);
-  nuevaTarea.appendChild(btnEditar);
-  nuevaTarea.appendChild(btnEliminar);
-  listaTarea.appendChild(nuevaTarea);
-}
+  
+    const btnEditar = document.createElement("button");
+    btnEditar.textContent = "Editar";
+    btnEditar.classList.add("btn-Editar");
+    btnEditar.addEventListener("click", () => {
+      const inputEdicion = document.createElement("input");
+      inputEdicion.type = "text";
+      inputEdicion.value = spanTexto.textContent;
+      inputEdicion.classList.add("input-edicion");
+  
+      nuevaTarea.replaceChild(inputEdicion, spanTexto);
+      nuevaTarea.replaceChild(btnGuardar, btnEditar);
+      inputEdicion.focus();
+  
+      inputEdicion.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") btnGuardar.click();
+      });
+    });
+  
+    const btnGuardar = document.createElement("button");
+    btnGuardar.textContent = "Guardar";
+    btnGuardar.classList.add("btn-guardar");
+    btnGuardar.addEventListener("click", () => {
+      const nuevoTexto = nuevaTarea.querySelector("input").value.trim();
+      spanTexto.textContent = nuevoTexto;
+      nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
+      nuevaTarea.replaceChild(btnEditar, btnGuardar);
+      guardarEnLocalStorage();
+    });
+  
+    nuevaTarea.appendChild(spanTexto);
+    nuevaTarea.appendChild(btnEditar);
+    nuevaTarea.appendChild(btnEliminar);
+    listaTarea.appendChild(nuevaTarea);
+  }
+  
 
 // Guardar tareas actuales en localStorage
 function guardarEnLocalStorage() {
