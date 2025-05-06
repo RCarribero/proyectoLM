@@ -70,3 +70,9 @@ function vaciarLista() {
 
 btnAgregar.addEventListener("click", agregarNuevaTarea);
 btn_vaciar.addEventListener("click", vaciarLista);
+
+inputTarea.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        agregarNuevaTarea();
+    }
+});
