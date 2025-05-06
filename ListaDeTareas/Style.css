@@ -1,0 +1,163 @@
+/* Fondo degradado */
+body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenedor principal */
+#contenedor {
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    padding: 40px 30px 30px 30px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 1s;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+/* Título */
+#titulo {
+    font-size: 2.2rem;
+    color: #2575fc;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px #b3c6ff55;
+}
+
+/* Input de tarea */
+#tarea_input {
+    width: 70%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    background: #f0f4ff;
+    box-shadow: 0 1px 4px #b3c6ff33;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+#tarea_input:focus {
+    box-shadow: 0 2px 8px #2575fc44;
+}
+
+/* Botones */
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 8px 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-weight: 500;
+    box-shadow: 0 2px 8px #b3c6ff22;
+}
+
+#btn_agregar, .btn-guardar {
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    color: #fff;
+}
+#btn_agregar:hover, .btn-guardar:hover {
+    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+    transform: scale(1.05);
+}
+
+#btn_vaciar {
+    background: #ff4b2b;
+    color: #fff;
+}
+#btn_vaciar:hover {
+    background: #ff416c;
+    transform: scale(1.05);
+}
+
+.btn-eliminar {
+    background: #ff4b2b;
+    color: #fff;
+    margin-left: 8px;
+}
+.btn-eliminar:hover {
+    background: #ff416c;
+}
+
+.btn-Editar {
+    background: #f9d423;
+    color: #333;
+    margin-left: 8px;
+}
+.btn-Editar:hover {
+    background: #fffc00;
+}
+
+.btn-guardar {
+    background: #43e97b;
+    color: #fff;
+    margin-left: 8px;
+}
+.btn-guardar:hover {
+    background: #38f9d7;
+}
+
+/* Lista de tareas */
+#listaTarea {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+}
+
+#listaTarea li {
+    background: #f0f4ff;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 12px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px #b3c6ff33;
+    animation: fadeIn 0.5s;
+    transition: box-shadow 0.2s;
+}
+
+#listaTarea li:hover {
+    box-shadow: 0 4px 16px #2575fc22;
+}
+
+.input-edicion {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #b3c6ff;
+    margin-right: 8px;
+    font-size: 1rem;
+    background: #fff;
+}
+
+::-webkit-input-placeholder { color: #b3c6ff; }
+::-moz-placeholder { color: #b3c6ff; }
+:-ms-input-placeholder { color: #b3c6ff; }
+::placeholder { color: #b3c6ff; }
+
+/* Responsive */
+@media (max-width: 500px) {
+    #contenedor {
+        padding: 20px 8px;
+        max-width: 98vw;
+    }
+    #tarea_input {
+        width: 100%;
+    }
+}
