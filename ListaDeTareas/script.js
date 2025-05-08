@@ -2,8 +2,13 @@ const inputTarea = document.getElementById("tarea_input");
 const btnAgregar = document.getElementById("btn_agregar");
 const listaTarea = document.getElementById("listaTarea");
 const btn_vaciar = document.getElementById("btn_vaciar");
-const checkImportante = document.getElementById("tarea_importante"); // NUEVO
-const inputMensajeImportante = document.getElementById("mensaje_importante"); // NUEVO
+const checkImportante = document.getElementById("tarea_importante");
+const inputMensajeImportante = document.getElementById("mensaje_importante");
+
+// Mostrar/ocultar input de mensaje importante
+checkImportante.addEventListener("change", function() {
+    inputMensajeImportante.style.display = this.checked ? "block" : "none";
+});
 
 // Solicitar permiso de notificaciones al cargar
 window.addEventListener("DOMContentLoaded", () => {
@@ -16,6 +21,30 @@ window.addEventListener("DOMContentLoaded", () => {
 btnAgregar.addEventListener("click", agregarNuevaTarea);
 btn_vaciar.addEventListener("click", vaciarLista);
 
+document.getElementById("btn_probar_notificacion").addEventListener("click", function() {
+    if ("Notification" in window) {
+        if (Notification.permission === "granted") {
+            new Notification("¡Esto es una prueba!", {
+                body: "Notificación de tarea importante funcionando.",
+                icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+            });
+        } else {
+            Notification.requestPermission().then(permiso => {
+                if (permiso === "granted") {
+                    new Notification("¡Esto es una prueba!", {
+                        body: "Notificación de tarea importante funcionando.",
+                        icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+                    });
+                } else {
+                    alert("No se concedieron permisos para notificaciones.");
+                }
+            });
+        }
+    } else {
+        alert("Tu navegador no soporta notificaciones.");
+    }
+});
+
 // Agrega nueva tarea desde input
 function agregarNuevaTarea() {
     const textoTarea = inputTarea.value.trim();
@@ -25,7 +54,7 @@ function agregarNuevaTarea() {
         alert("Por favor, escribe una tarea");
         return;
     }
-    crearElementoTarea(textoTarea, esImportante);
+    crearElementoTarea(textoTarea, esImportante, mensajeImportante, "Sin hacer");
     inputTarea.value = "";
     checkImportante.checked = false;
     inputMensajeImportante.value = "";
@@ -41,8 +70,8 @@ function agregarNuevaTarea() {
     }
 }
 
-// Crear elemento <li> con botones
-function crearElementoTarea(textoTarea, esImportante = false) {
+// Crear elemento <li> con botones y menú de estado
+function crearElementoTarea(textoTarea, esImportante = false, mensajeImportante = "", estado = "Sin hacer") {
     const nuevaTarea = document.createElement("li");
 
     const spanTexto = document.createElement("span");
@@ -52,7 +81,37 @@ function crearElementoTarea(textoTarea, esImportante = false) {
         spanTexto.style.fontWeight = "bold";
         spanTexto.textContent = "★ " + textoTarea;
     }
+    spanTexto.dataset.importante = esImportante;
+    spanTexto.dataset.mensaje = mensajeImportante;
+    spanTexto.dataset.estado = estado;
 
+    // Botón de estado
+    const btnEstado = document.createElement("button");
+    btnEstado.textContent = estado; // Mostrar el estado actual en el botón
+    btnEstado.classList.add("btn-estado");
+    actualizarColorEstado(btnEstado, estado);
+
+    const menuEstado = document.createElement("ul");
+    menuEstado.classList.add("estado-menu");
+    const estados = ["Sin hacer", "En proceso", "Terminada"];
+    estados.forEach(est => {
+        const estadoItem = document.createElement("li");
+        estadoItem.textContent = est;
+        estadoItem.addEventListener("click", () => {
+            spanTexto.dataset.estado = est;
+            btnEstado.textContent = est; // Cambia el texto del botón al nuevo estado
+            actualizarColorEstado(btnEstado, est);
+            menuEstado.style.display = "none";
+            guardarEnLocalStorage();
+        });
+        menuEstado.appendChild(estadoItem);
+    });
+    btnEstado.addEventListener("click", () => {
+        menuEstado.style.display = menuEstado.style.display === "none" ? "block" : "none";
+    });
+    menuEstado.style.display = "none";
+
+    // Botón eliminar
     const btnEliminar = document.createElement("button");
     btnEliminar.textContent = "Eliminar";
     btnEliminar.classList.add("btn-eliminar");
@@ -61,6 +120,7 @@ function crearElementoTarea(textoTarea, esImportante = false) {
         guardarEnLocalStorage();
     });
 
+    // Botón editar
     const btnEditar = document.createElement("button");
     btnEditar.textContent = "Editar";
     btnEditar.classList.add("btn-Editar");
@@ -79,90 +139,21 @@ function crearElementoTarea(textoTarea, esImportante = false) {
         });
     });
 
+    // Botón guardar (edición)
     const btnGuardar = document.createElement("button");
     btnGuardar.textContent = "Guardar";
     btnGuardar.classList.add("btn-guardar");
     btnGuardar.addEventListener("click", () => {
         const nuevoTexto = nuevaTarea.querySelector("input").value.trim();
-        spanTexto.textContent = nuevoTexto;
+        if (esImportante) {
+            spanTexto.textContent = "★ " + nuevoTexto;
+        } else {
+            spanTexto.textContent = nuevoTexto;
+        }
         nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
         nuevaTarea.replaceChild(btnEditar, btnGuardar);
         guardarEnLocalStorage();
     });
-
-    nuevaTarea.appendChild(spanTexto);
-    nuevaTarea.appendChild(btnEditar);
-    nuevaTarea.appendChild(btnEliminar);
-    listaTarea.appendChild(nuevaTarea);
-}
-
-// Guardar tareas actuales en localStorage (ahora guarda si es importante)
-// Crear elemento <li> con botones y menú de estado
-function crearElementoTarea(textoTarea) {
-    const nuevaTarea = document.createElement("li");
-
-    const spanTexto = document.createElement("span");
-    spanTexto.textContent = textoTarea;
-
-    const btnEliminar = document.createElement("button");
-    btnEliminar.textContent = "Eliminar";
-    btnEliminar.classList.add("btn-eliminar");
-    btnEliminar.addEventListener("click", () => {
-        listaTarea.removeChild(nuevaTarea);
-        guardarEnLocalStorage();
-    });
-
-    const btnEditar = document.createElement("button");
-    btnEditar.textContent = "Editar";
-    btnEditar.classList.add("btn-Editar");
-    btnEditar.addEventListener("click", () => {
-        const inputEdicion = document.createElement("input");
-        inputEdicion.type = "text";
-        inputEdicion.value = spanTexto.textContent;
-        inputEdicion.classList.add("input-edicion");
-
-        nuevaTarea.replaceChild(inputEdicion, spanTexto);
-        nuevaTarea.replaceChild(btnGuardar, btnEditar);
-        inputEdicion.focus();
-
-        inputEdicion.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") btnGuardar.click();
-        });
-    });
-
-    const btnGuardar = document.createElement("button");
-    btnGuardar.textContent = "Guardar";
-    btnGuardar.classList.add("btn-guardar");
-    btnGuardar.addEventListener("click", () => {
-        const nuevoTexto = nuevaTarea.querySelector("input").value.trim();
-        spanTexto.textContent = nuevoTexto;
-        nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
-        nuevaTarea.replaceChild(btnEditar, btnGuardar);
-        guardarEnLocalStorage();
-    });
-
-    // Botón de estado
-    const btnEstado = document.createElement("button");
-    btnEstado.textContent = "Estado";
-    btnEstado.classList.add("btn-estado");
-    const menuEstado = document.createElement("ul");
-    menuEstado.classList.add("estado-menu");
-    const estados = ["Sin hacer", "En proceso", "Terminada"];
-    estados.forEach(estado => {
-        const estadoItem = document.createElement("li");
-        estadoItem.textContent = estado;
-        estadoItem.addEventListener("click", () => {
-            spanTexto.dataset.estado = estado;
-            actualizarColorEstado(btnEstado, estado);
-            menuEstado.style.display = "none";
-            guardarEnLocalStorage();
-        });
-        menuEstado.appendChild(estadoItem);
-    });
-    btnEstado.addEventListener("click", () => {
-        menuEstado.style.display = menuEstado.style.display === "none" ? "block" : "none";
-    });
-    menuEstado.style.display = "none";
 
     nuevaTarea.appendChild(btnEstado);
     nuevaTarea.appendChild(spanTexto);
@@ -171,10 +162,10 @@ function crearElementoTarea(textoTarea) {
     nuevaTarea.appendChild(menuEstado);
     listaTarea.appendChild(nuevaTarea);
 
-    return nuevaTarea; // Devolver el elemento creado
+    return nuevaTarea;
 }
 
-// Función para actualizar el color del botón de estado
+// Actualiza el color del botón de estado
 function actualizarColorEstado(btn, estado) {
     btn.classList.remove("estado-sin-hacer", "estado-en-proceso", "estado-terminada");
     if (estado === "Sin hacer") {
@@ -191,13 +182,10 @@ function guardarEnLocalStorage() {
     const tareas = [];
     listaTarea.querySelectorAll("li span").forEach(span => {
         const texto = span.textContent.replace(/^★ /, "");
-        const importante = span.textContent.startsWith("★ ");
-        tareas.push({ texto, importante });
-    });
-    localStorage.setItem("tareas", JSON.stringify(tareas));
-    const tareas = [];
-    listaTarea.querySelectorAll("li span").forEach(span => {
-        tareas.push({ texto: span.textContent, estado: span.dataset.estado || "Sin hacer" });
+        const importante = span.dataset.importante === "true" || span.textContent.startsWith("★ ");
+        const mensaje = span.dataset.mensaje || "";
+        const estado = span.dataset.estado || "Sin hacer";
+        tareas.push({ texto, importante, mensaje, estado });
     });
     localStorage.setItem("tareas", JSON.stringify(tareas));
 }
@@ -206,11 +194,7 @@ function guardarEnLocalStorage() {
 function cargarDesdeLocalStorage() {
     const tareasGuardadas = JSON.parse(localStorage.getItem("tareas")) || [];
     tareasGuardadas.forEach(t => {
-        const tareaElemento = crearElementoTarea(t.texto);
-        const spanTexto = tareaElemento.querySelector("span");
-        spanTexto.dataset.estado = t.estado;
-        const btnEstado = tareaElemento.querySelector(".btn-estado");
-        actualizarColorEstado(btnEstado, t.estado);
+        crearElementoTarea(t.texto, t.importante, t.mensaje, t.estado);
     });
 }
 
