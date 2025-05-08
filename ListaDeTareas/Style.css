@@ -54,6 +54,46 @@ body {
     box-shadow: 0 2px 8px #2575fc44;
 }
 
+/* Estilo para el selector de importancia */
+#tarea_importancia {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b3c6ff;
+    border-radius: 8px;
+    background: #f0f4ff;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 4px #b3c6ff33;
+    outline: none;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+#tarea_importancia:focus {
+    box-shadow: 0 2px 8px #2575fc44;
+    background: #eaf3ff;
+}
+
+/* Estilo para las opciones del selector */
+#tarea_importancia option {
+    font-size: 1rem;
+    padding: 10px;
+}
+
+/* Colores de fondo para las opciones (solo visual, no afecta el texto seleccionado) */
+#tarea_importancia option[value="importante"] {
+    color: red;
+    font-weight: bold;
+}
+
+#tarea_importancia option[value="normal"] {
+    color: green;
+}
+
+#tarea_importancia option[value="opcional"] {
+    color: blue;
+}
+
 /* Botones */
 button {
     padding: 10px 18px;
@@ -200,4 +240,17 @@ button {
     #tarea_input {
         width: 100%;
     }
+}
+/* Clases de prioridad */
+.importante {
+    color: red;
+    font-weight: bold;
+}
+
+.normal {
+    color: green;
+}
+
+.opcional {
+    color: blue;
 }

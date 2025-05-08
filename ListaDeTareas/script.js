@@ -9,6 +9,7 @@ const inputMensajeImportante = document.getElementById("mensaje_importante");
 checkImportante.addEventListener("change", function() {
     inputMensajeImportante.style.display = this.checked ? "block" : "none";
 });
+const selectImportancia = document.getElementById("tarea_importancia"); // NUEVO
 
 // Solicitar permiso de notificaciones al cargar
 window.addEventListener("DOMContentLoaded", () => {
@@ -48,39 +49,32 @@ document.getElementById("btn_probar_notificacion").addEventListener("click", fun
 // Agrega nueva tarea desde input
 function agregarNuevaTarea() {
     const textoTarea = inputTarea.value.trim();
-    const esImportante = checkImportante.checked;
-    const mensajeImportante = inputMensajeImportante.value.trim();
+    const importancia = selectImportancia.value; // Obtiene la importancia seleccionada
+
     if (textoTarea === "") {
         alert("Por favor, escribe una tarea");
         return;
     }
-    crearElementoTarea(textoTarea, esImportante, mensajeImportante, "Sin hacer");
-    inputTarea.value = "";
-    checkImportante.checked = false;
-    inputMensajeImportante.value = "";
-    inputMensajeImportante.style.display = "none";
-    guardarEnLocalStorage();
 
-    // Notificación solo si es importante
-    if (esImportante && "Notification" in window && Notification.permission === "granted") {
-        new Notification("¡Tarea importante añadida!", {
-            body: mensajeImportante !== "" ? mensajeImportante : textoTarea,
-            icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-        });
-    }
+    crearElementoTarea(textoTarea, importancia, mensajeImportante, "Sin hacer");
+    inputTarea.value = "";
+    selectImportancia.value = "normal"; // Restablece el selector a "normal"
+    guardarEnLocalStorage();
 }
 
 // Crear elemento <li> con botones y menú de estado
-function crearElementoTarea(textoTarea, esImportante = false, mensajeImportante = "", estado = "Sin hacer") {
+function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportante = "", estado = "Sin hacer") {
     const nuevaTarea = document.createElement("li");
+    nuevaTarea.classList.add(importancia); // Aplica la clase según la importancia
+
+    // Determina el emoji según la importancia
+    let emoji = "";
+    if (importancia === "importante") emoji = "⭐️"; // Cambiado a estrella roja
+    else if (importancia === "normal") emoji = "✅"; // Emoji para normal
+    else if (importancia === "opcional") emoji = "💡"; // Emoji para opcional
 
     const spanTexto = document.createElement("span");
-    spanTexto.textContent = textoTarea;
-    if (esImportante) {
-        spanTexto.style.color = "#e53935";
-        spanTexto.style.fontWeight = "bold";
-        spanTexto.textContent = "★ " + textoTarea;
-    }
+    spanTexto.textContent = `${emoji} ${textoTarea}`; // Agrega el emoji al texto
     spanTexto.dataset.importante = esImportante;
     spanTexto.dataset.mensaje = mensajeImportante;
     spanTexto.dataset.estado = estado;
@@ -127,7 +121,7 @@ function crearElementoTarea(textoTarea, esImportante = false, mensajeImportante 
     btnEditar.addEventListener("click", () => {
         const inputEdicion = document.createElement("input");
         inputEdicion.type = "text";
-        inputEdicion.value = spanTexto.textContent.replace(/^★ /, "");
+        inputEdicion.value = textoTarea;
         inputEdicion.classList.add("input-edicion");
 
         nuevaTarea.replaceChild(inputEdicion, spanTexto);
@@ -148,7 +142,7 @@ function crearElementoTarea(textoTarea, esImportante = false, mensajeImportante 
         if (esImportante) {
             spanTexto.textContent = "★ " + nuevoTexto;
         } else {
-            spanTexto.textContent = nuevoTexto;
+            spanTexto.textContent = `${emoji} ${nuevoTexto}`;
         }
         nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
         nuevaTarea.replaceChild(btnEditar, btnGuardar);
