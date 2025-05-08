@@ -2,14 +2,13 @@ const inputTarea = document.getElementById("tarea_input");
 const btnAgregar = document.getElementById("btn_agregar");
 const listaTarea = document.getElementById("listaTarea");
 const btn_vaciar = document.getElementById("btn_vaciar");
-const checkImportante = document.getElementById("tarea_importante");
+const selectImportancia = document.getElementById("tarea_importancia");
 const inputMensajeImportante = document.getElementById("mensaje_importante");
 
-// Mostrar/ocultar input de mensaje importante
-checkImportante.addEventListener("change", function() {
-    inputMensajeImportante.style.display = this.checked ? "block" : "none";
+// Mostrar/ocultar input de mensaje importante según selector
+selectImportancia.addEventListener("change", function() {
+    inputMensajeImportante.style.display = this.value === "importante" ? "block" : "none";
 });
-const selectImportancia = document.getElementById("tarea_importancia"); // NUEVO
 
 // Solicitar permiso de notificaciones al cargar
 window.addEventListener("DOMContentLoaded", () => {
@@ -49,7 +48,8 @@ document.getElementById("btn_probar_notificacion").addEventListener("click", fun
 // Agrega nueva tarea desde input
 function agregarNuevaTarea() {
     const textoTarea = inputTarea.value.trim();
-    const importancia = selectImportancia.value; // Obtiene la importancia seleccionada
+    const importancia = selectImportancia.value;
+    const mensajeImportante = inputMensajeImportante.value.trim();
 
     if (textoTarea === "") {
         alert("Por favor, escribe una tarea");
@@ -58,30 +58,40 @@ function agregarNuevaTarea() {
 
     crearElementoTarea(textoTarea, importancia, mensajeImportante, "Sin hacer");
     inputTarea.value = "";
-    selectImportancia.value = "normal"; // Restablece el selector a "normal"
+    selectImportancia.value = "normal";
+    inputMensajeImportante.value = "";
+    inputMensajeImportante.style.display = "none";
     guardarEnLocalStorage();
+
+    // Notificación solo si es importante
+    if (importancia === "importante" && "Notification" in window && Notification.permission === "granted") {
+        new Notification("¡Tarea importante añadida!", {
+            body: mensajeImportante !== "" ? mensajeImportante : textoTarea,
+            icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+        });
+    }
 }
 
 // Crear elemento <li> con botones y menú de estado
 function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportante = "", estado = "Sin hacer") {
     const nuevaTarea = document.createElement("li");
-    nuevaTarea.classList.add(importancia); // Aplica la clase según la importancia
+    nuevaTarea.classList.add(importancia);
 
     // Determina el emoji según la importancia
     let emoji = "";
-    if (importancia === "importante") emoji = "⭐️"; // Cambiado a estrella roja
-    else if (importancia === "normal") emoji = "✅"; // Emoji para normal
-    else if (importancia === "opcional") emoji = "💡"; // Emoji para opcional
+    if (importancia === "importante") emoji = "⭐️";
+    else if (importancia === "normal") emoji = "✅";
+    else if (importancia === "opcional") emoji = "💡";
 
     const spanTexto = document.createElement("span");
-    spanTexto.textContent = `${emoji} ${textoTarea}`; // Agrega el emoji al texto
-    spanTexto.dataset.importante = esImportante;
+    spanTexto.textContent = `${emoji} ${textoTarea}`;
+    spanTexto.dataset.importancia = importancia;
     spanTexto.dataset.mensaje = mensajeImportante;
     spanTexto.dataset.estado = estado;
 
     // Botón de estado
     const btnEstado = document.createElement("button");
-    btnEstado.textContent = estado; // Mostrar el estado actual en el botón
+    btnEstado.textContent = estado;
     btnEstado.classList.add("btn-estado");
     actualizarColorEstado(btnEstado, estado);
 
@@ -93,7 +103,7 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
         estadoItem.textContent = est;
         estadoItem.addEventListener("click", () => {
             spanTexto.dataset.estado = est;
-            btnEstado.textContent = est; // Cambia el texto del botón al nuevo estado
+            btnEstado.textContent = est;
             actualizarColorEstado(btnEstado, est);
             menuEstado.style.display = "none";
             guardarEnLocalStorage();
@@ -139,11 +149,7 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
     btnGuardar.classList.add("btn-guardar");
     btnGuardar.addEventListener("click", () => {
         const nuevoTexto = nuevaTarea.querySelector("input").value.trim();
-        if (esImportante) {
-            spanTexto.textContent = "★ " + nuevoTexto;
-        } else {
-            spanTexto.textContent = `${emoji} ${nuevoTexto}`;
-        }
+        spanTexto.textContent = `${emoji} ${nuevoTexto}`;
         nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
         nuevaTarea.replaceChild(btnEditar, btnGuardar);
         guardarEnLocalStorage();
@@ -175,11 +181,11 @@ function actualizarColorEstado(btn, estado) {
 function guardarEnLocalStorage() {
     const tareas = [];
     listaTarea.querySelectorAll("li span").forEach(span => {
-        const texto = span.textContent.replace(/^★ /, "");
-        const importante = span.dataset.importante === "true" || span.textContent.startsWith("★ ");
+        const texto = span.textContent.replace(/^[⭐️✅💡] /, "");
+        const importancia = span.dataset.importancia || "normal";
         const mensaje = span.dataset.mensaje || "";
         const estado = span.dataset.estado || "Sin hacer";
-        tareas.push({ texto, importante, mensaje, estado });
+        tareas.push({ texto, importancia, mensaje, estado });
     });
     localStorage.setItem("tareas", JSON.stringify(tareas));
 }
@@ -188,7 +194,7 @@ function guardarEnLocalStorage() {
 function cargarDesdeLocalStorage() {
     const tareasGuardadas = JSON.parse(localStorage.getItem("tareas")) || [];
     tareasGuardadas.forEach(t => {
-        crearElementoTarea(t.texto, t.importante, t.mensaje, t.estado);
+        crearElementoTarea(t.texto, t.importancia, t.mensaje, t.estado);
     });
 }
 
