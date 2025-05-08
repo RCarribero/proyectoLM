@@ -137,6 +137,14 @@ button {
     box-shadow: 0 4px 16px #2575fc22;
 }
 
+#listaTarea li span {
+    font-size: 1rem;
+}
+#listaTarea li span[style*="color: #e53935"] {
+    color: #e53935 !important;
+    font-weight: bold;
+}
+
 .input-edicion {
     flex: 1;
     padding: 8px;
