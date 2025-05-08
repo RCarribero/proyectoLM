@@ -130,6 +130,7 @@ button {
     box-shadow: 0 1px 4px #b3c6ff33;
     animation: fadeIn 0.5s;
     transition: box-shadow 0.2s;
+    position: relative; /* Necesario para el menú desplegable */
 }
 
 #listaTarea li:hover {
@@ -150,6 +151,37 @@ button {
 ::-moz-placeholder { color: #b3c6ff; }
 :-ms-input-placeholder { color: #b3c6ff; }
 ::placeholder { color: #b3c6ff; }
+
+/* Estilos para el menú de estado */
+.estado-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: auto; /* Ajusta el ancho al contenido */
+    padding: 0; /* Elimina el padding */
+}
+
+.estado-menu li {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid transparent; /* Inicialmente sin borde */
+}
+
+.estado-menu li:hover {
+    background-color: #e8e0e3;
+    border: 1px solid #0400ea; /* Añade borde al hacer hover */
+}
+
+/* Mostrar el menú cuando se hace clic en el botón de estado */
+.btn-estado.active + .estado-menu {
+    display: block;
+}
 
 /* Responsive */
 @media (max-width: 500px) {
