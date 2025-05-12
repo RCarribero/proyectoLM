@@ -4,6 +4,8 @@ const listaTarea = document.getElementById("listaTarea");
 const btn_vaciar = document.getElementById("btn_vaciar");
 const selectImportancia = document.getElementById("tarea_importancia");
 const inputMensajeImportante = document.getElementById("mensaje_importante");
+const btnNotificacion = document.getElementById("btn_notificacion");
+const divNotificacionIncompatible = document.getElementById("notificacion_incompatible");
 
 // Mostrar/ocultar input de mensaje importante según selector
 selectImportancia.addEventListener("change", function() {
@@ -20,6 +22,34 @@ window.addEventListener("DOMContentLoaded", () => {
 
 btnAgregar.addEventListener("click", agregarNuevaTarea);
 btn_vaciar.addEventListener("click", vaciarLista);
+
+if (btnNotificacion) {
+    btnNotificacion.addEventListener("click", function() {
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+                new Notification("¡Esto es una notificación de prueba!", {
+                    body: "Si ves esto, las notificaciones funcionan.",
+                    icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("¡Esto es una notificación de prueba!", {
+                            body: "Si ves esto, las notificaciones funcionan.",
+                            icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
+                        });
+                    } else {
+                        if (divNotificacionIncompatible) divNotificacionIncompatible.style.display = "flex";
+                    }
+                });
+            } else {
+                if (divNotificacionIncompatible) divNotificacionIncompatible.style.display = "flex";
+            }
+        } else {
+            if (divNotificacionIncompatible) divNotificacionIncompatible.style.display = "flex";
+        }
+    });
+}
 
 // Agrega nueva tarea desde input
 function agregarNuevaTarea() {
