@@ -21,30 +21,6 @@ window.addEventListener("DOMContentLoaded", () => {
 btnAgregar.addEventListener("click", agregarNuevaTarea);
 btn_vaciar.addEventListener("click", vaciarLista);
 
-document.getElementById("btn_probar_notificacion").addEventListener("click", function() {
-    if ("Notification" in window) {
-        if (Notification.permission === "granted") {
-            new Notification("¡Esto es una prueba!", {
-                body: "Notificación de tarea importante funcionando.",
-                icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-            });
-        } else {
-            Notification.requestPermission().then(permiso => {
-                if (permiso === "granted") {
-                    new Notification("¡Esto es una prueba!", {
-                        body: "Notificación de tarea importante funcionando.",
-                        icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
-                    });
-                } else {
-                    alert("No se concedieron permisos para notificaciones.");
-                }
-            });
-        }
-    } else {
-        alert("Tu navegador no soporta notificaciones.");
-    }
-});
-
 // Agrega nueva tarea desde input
 function agregarNuevaTarea() {
     const textoTarea = inputTarea.value.trim();
@@ -63,10 +39,12 @@ function agregarNuevaTarea() {
     inputMensajeImportante.style.display = "none";
     guardarEnLocalStorage();
 
-    // Notificación solo si es importante
-    if (importancia === "importante" && "Notification" in window && Notification.permission === "granted") {
-        new Notification("¡Tarea importante añadida!", {
-            body: mensajeImportante !== "" ? mensajeImportante : textoTarea,
+    // Notificación personalizada según importancia
+    if ("Notification" in window && Notification.permission === "granted") {
+        let titulo = importancia === "importante" ? "¡Tarea importante añadida!" : "¡Tarea añadida!";
+        let cuerpo = mensajeImportante !== "" ? mensajeImportante : textoTarea;
+        new Notification(titulo, {
+            body: cuerpo,
             icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
         });
     }
