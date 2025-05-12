@@ -1,4 +1,4 @@
-// Referencias a elementos del DOM
+// Referencias a elementos del HTTML
 const inputTarea = document.getElementById("tarea_input");
 const btnAgregar = document.getElementById("btn_agregar");
 const listaTarea = document.getElementById("listaTarea");
@@ -6,7 +6,7 @@ const btn_vaciar = document.getElementById("btn_vaciar");
 const selectImportancia = document.getElementById("tarea_importancia");
 const inputMensajeImportante = document.getElementById("mensaje_importante");
 
-// Mostrar/ocultar input de mensaje importante según la importancia seleccionada
+// Nos muestra y nos oculta el mensaje importante según la importancia seleccionada
 selectImportancia.addEventListener("change", function() {
     inputMensajeImportante.style.display = this.value === "importante" ? "block" : "none";
 });
@@ -19,13 +19,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Agregar nueva tarea al hacer clic en el botón
+// Agregamos una nueva tarea al hacer clic en el botón
 btnAgregar.addEventListener("click", agregarNuevaTarea);
 
-// Vaciar la lista de tareas al hacer clic en el botón
+// Vaciamos la lista de tareas al hacer clic en el botón
 btn_vaciar.addEventListener("click", vaciarLista);
 
-// Agregar nueva tarea desde el input
+// Agregamos nueva tarea desde el input
 function agregarNuevaTarea() {
     const textoTarea = inputTarea.value.trim();
     const importancia = selectImportancia.value;
@@ -36,7 +36,7 @@ function agregarNuevaTarea() {
         return;
     }
 
-    // Crear el elemento de la tarea y resetear los inputs
+    // Crear el elemento de la tarea y reiniciar los inputs
     crearElementoTarea(textoTarea, importancia, mensajeImportante, "Sin hacer");
     inputTarea.value = "";
     selectImportancia.value = "normal";
@@ -60,20 +60,20 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
     const nuevaTarea = document.createElement("li");
     nuevaTarea.classList.add(importancia); // Clase según la importancia
 
-    // Determinar el emoji según la importancia
+    // pone el emoji según la importancia
     let emoji = "";
     if (importancia === "importante") emoji = "⭐️";
     else if (importancia === "normal") emoji = "✅";
     else if (importancia === "opcional") emoji = "💡";
 
-    // Crear el texto de la tarea con los datos asociados
+    // Crear el texto de la tarea con los datos que le hemos pasado
     const spanTexto = document.createElement("span");
     spanTexto.textContent = `${emoji} ${textoTarea}`;
     spanTexto.dataset.importancia = importancia;
     spanTexto.dataset.mensaje = mensajeImportante;
     spanTexto.dataset.estado = estado;
 
-    // Botón para cambiar el estado de la tarea
+    // Botón para cambiar el estado de la tarea que queramos
     const btnEstado = document.createElement("button");
     btnEstado.textContent = estado;
     btnEstado.classList.add("btn-estado");
@@ -106,7 +106,7 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
     btnEliminar.classList.add("btn-eliminar");
     btnEliminar.addEventListener("click", () => {
         listaTarea.removeChild(nuevaTarea); // Eliminar tarea del DOM
-        guardarEnLocalStorage(); // Guardar cambios
+        guardarEnLocalStorage(); // Guardar cambios en el localStorage
     });
 
     // Botón para editar la tarea
@@ -124,7 +124,7 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
         inputEdicion.focus();
 
         inputEdicion.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") btnGuardar.click(); // Guardar al presionar Enter
+            if (e.key === "Enter") btnGuardar.click(); // Guardar los datos que le ponemos al presionar Enter
         });
     });
 
@@ -137,7 +137,7 @@ function crearElementoTarea(textoTarea, importancia = "normal", mensajeImportant
         spanTexto.textContent = `${emoji} ${nuevoTexto}`;
         nuevaTarea.replaceChild(spanTexto, nuevaTarea.querySelector("input"));
         nuevaTarea.replaceChild(btnEditar, btnGuardar);
-        guardarEnLocalStorage(); // Guardar cambios
+        guardarEnLocalStorage(); // Guardar cambios en el localStorage
     });
 
     // Añadir elementos al <li> y al DOM
@@ -191,7 +191,7 @@ function vaciarLista() {
         return;
     }
     while (listaTarea.firstChild) {
-        listaTarea.removeChild(listaTarea.firstChild); // Eliminar todas las tareas
+        listaTarea.removeChild(listaTarea.firstChild); // Eliminar todas las tareas que haya en la lista
     }
     guardarEnLocalStorage(); // Limpiar localStorage
 }
