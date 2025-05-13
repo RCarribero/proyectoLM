@@ -196,6 +196,25 @@ function vaciarLista() {
     guardarEnLocalStorage(); // Limpiar localStorage
 }
 
+const btnContar = document.getElementById("btn_contar");
+
+
+// Contar tareas por importancia
+btnContar.addEventListener("click", () => {
+    const tareas = listaTarea.querySelectorAll("li span");
+    let importantes = 0, normales = 0, opcionales = 0;
+
+    tareas.forEach(span => {
+        const importancia = span.dataset.importancia;
+        if (importancia === "importante") importantes++;
+        else if (importancia === "normal") normales++;
+        else if (importancia === "opcional") opcionales++;
+    });
+
+    alert(`Tareas importantes: ${importantes}\nTareas normales: ${normales}\nTareas opcionales: ${opcionales}`);
+});
+
+
 // Agregar tarea al presionar Enter en el input
 inputTarea.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {

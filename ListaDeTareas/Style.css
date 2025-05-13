@@ -257,3 +257,14 @@ button {
 .opcional {
     color: blue;
 }
+
+/* Botón para contar tareas */
+#btn_contar {
+    background: #ffa500;
+    color: #fff;
+}
+#btn_contar:hover {
+    background: #ffb732;
+    transform: scale(1.05);
+}
+
